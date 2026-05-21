@@ -1,0 +1,15 @@
+qdrant-client
+neo4j
+python-dotenv
+sentence-transformers
+openai
+pandas
+numpy
+fastapi
+uvicorn
+sse-starlette
+langgraph
+langchain
+langchain-openai
+langchain-community
+pydantic
