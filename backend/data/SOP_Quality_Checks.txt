@@ -1,0 +1,4 @@
+SOP: Quality Checks
+Inspect finished products every 2 hours.
+Record defects in the quality management system.
+Notify Quality Team if defect rate exceeds 2%.

@@ -1,0 +1,5 @@
+SOP: Assembly Line A
+If Machine MX-200 reports Error E104, inspect coolant valve CV-12.
+Verify coolant flow.
+Restart the control module.
+Escalate to Manufacturing Team if error persists.

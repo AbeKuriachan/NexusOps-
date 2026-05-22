@@ -1,0 +1,7 @@
+source,relationship,target
+MX-200,USES,CV-12
+CV-12,SUPPLIED_BY,CoolTech Ltd.
+MX-200,LOCATED_IN,Plant A
+INC-101,INVOLVES,MX-200
+John Patel,OWNS,MX-200
+John Patel,MEMBER_OF,Manufacturing Team

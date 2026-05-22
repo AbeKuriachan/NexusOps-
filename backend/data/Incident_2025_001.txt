@@ -1,0 +1,6 @@
+Incident ID: INC-101
+Machine: MX-200
+Plant: Plant A
+Root Cause: Faulty coolant valve CV-12
+Supplier: CoolTech Ltd.
+Downtime: 6 hours

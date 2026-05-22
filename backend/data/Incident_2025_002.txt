@@ -1,0 +1,6 @@
+Incident ID: INC-102
+Machine: MX-200
+Plant: Plant A
+Root Cause: Coolant flow restriction
+Supplier: CoolTech Ltd.
+Downtime: 4 hours
