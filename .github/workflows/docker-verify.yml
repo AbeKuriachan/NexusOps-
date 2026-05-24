@@ -1,0 +1,77 @@
+name: Docker Build Verification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'backend/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/Dockerfile'
+      - 'backend/requirements.txt'
+
+jobs:
+  build-backend:
+    name: Build Backend Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false
+          tags: nexusops-backend:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  boot-stack:
+    name: Verify Docker Compose Stack Boots
+    runs-on: ubuntu-latest
+    needs: build-backend
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Create .env file for docker-compose
+        run: |
+          cat > backend/.env <<EOF
+          QDRANT_HOST=qdrant
+          QDRANT_PORT=6333
+          QDRANT_COLLECTION_NAME=operations_docs
+          NEO4J_URI=bolt://neo4j:7687
+          NEO4J_USERNAME=neo4j
+          NEO4J_PASSWORD=password123
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          EMBEDDING_PROVIDER=local
+          EOF
+
+      - name: Boot Docker Compose Stack
+        run: |
+          docker compose -f backend/docker-compose.yml up -d --build neo4j qdrant
+          echo "Waiting 20s for services to be healthy..."
+          sleep 20
+
+      - name: Verify Neo4j is Reachable
+        run: |
+          curl --retry 5 --retry-delay 5 --retry-connrefused -f http://localhost:7474 \
+            && echo "Neo4j OK" || (echo "Neo4j FAILED" && exit 1)
+
+      - name: Verify Qdrant is Reachable
+        run: |
+          curl --retry 5 --retry-delay 5 --retry-connrefused -f http://localhost:6333/healthz \
+            && echo "Qdrant OK" || (echo "Qdrant FAILED" && exit 1)
+
+      - name: Tear Down Stack
+        if: always()
+        run: docker compose -f backend/docker-compose.yml down -v
